@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.0)
 
-project(jsonrpcpp CXX)
+project(jsonrpcpp VERSION 1.1.0 LANGUAGES CXX)
 set(PROJECT_DESCRIPTION "C++ JSON-RPC 2.0 library")
 set(PROJECT_URL "https://github.com/badaix/jsonrpcpp")
 set(PROJECT_VERSION "1.0.0")
@@ -23,13 +23,18 @@ if(NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
         PATH "Output directory for header files")
 endif()
 
-include_directories(lib lib/externals)
+include_directories(lib)
 set(JSONRPCPP_SOURCES lib/jsonrp.cpp)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 if (BUILD_SHARED_LIBS)
     add_library(jsonrpcpp SHARED "${JSONRPCPP_SOURCES}")
-    install(TARGETS jsonrpcpp LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+	if(WIN32)
+		install(TARGETS jsonrpcpp RUNTIME DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+	else()
+		install(TARGETS jsonrpcpp LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+	endif()
+    
 endif (BUILD_SHARED_LIBS)
 
 if (BUILD_STATIC_LIBS)
@@ -47,7 +52,7 @@ if (BUILD_TESTS)
     target_link_libraries(jsonrpctest jsonrpcpp-static)
 endif (BUILD_TESTS)
 
-install(FILES lib/jsonrp.hpp lib/externals/json.hpp
+install(FILES lib/jsonrp.hpp lib/json.hpp
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/jsonrpcpp")
 
 configure_file(
